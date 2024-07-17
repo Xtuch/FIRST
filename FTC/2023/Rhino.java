@@ -1,32 +1,52 @@
 /*
-New functions ideas
+FTC 2024 Constructor
 */
 
-package org.firstinspires.ftc.teamcode.Eliud;
+package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.linearOpMode;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.opMode;
-
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 public class Rhino {
 
-    public DcMotor FR;
-    public DcMotor FL;
-    public DcMotor BR;
-    public DcMotor BL;
-    public Servo garra;
-    public IMU imu;
+    //CHASIS
+    DcMotor FR;
+    DcMotor FL;
+    DcMotor BR;
+    DcMotor BL;
 
-    public Rhino(DcMotor FR, DcMotor FL, DcMotor BR, DcMotor BL, Servo garra, IMU imu) {
+    //MOTOR TOOLS
+    DcMotor Barredora;
+    DcMotor ElevadorDerecho;
+    DcMotor ElevadorIzquierdo;
+    DcMotor Gancho;
+
+    //SERVO TOOLS
+    Servo Cremallera;
+    Servo Avion;
+    Servo BaseBrazo;
+    Servo garraIzq;
+    Servo garraDer;
+
+    //SENSORS
+    IMU imu;
+    DistanceSensor sensorDeDistancia;
+    
+    //VARIABLES
+    
+    int adelante = -1;
+    int atras = 1;
+
+    public Rhino(DcMotor FR, DcMotor FL, DcMotor BR, DcMotor BL,
+                 DcMotor Barredora, DcMotor ElevadorDerecho, DcMotor ElevadorIzquierdo, DcMotor Gancho,
+                 Servo Cremallera, Servo Avion, Servo BaseBrazo, Servo garraIzq, Servo garraDer,  IMU imu) {
 
         this.FR = FR;
         this.FL = FL;
@@ -42,18 +62,36 @@ public class Rhino {
         FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Barredora.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        ElevadorDerecho.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        ElevadorIzquierdo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Gancho.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
     }
 
-    public void mapping() {
+    public void mapping(){
 
-        FR = hardwareMap.dcMotor.get("0");
-        FL = hardwareMap.dcMotor.get("1");
-        BR = hardwareMap.dcMotor.get("2");
-        BL = hardwareMap.dcMotor.get("3");
-        garra = hardwareMap.get(Servo.class, "5");
+        FL = hardwareMap.get(DcMotor.class, "0");
+        FR = hardwareMap.get(DcMotor.class, "1");
+        BL = hardwareMap.get(DcMotor.class, "2");
+        BR = hardwareMap.get(DcMotor.class, "3");
+        Barredora = hardwareMap.get(DcMotor.class, "m0");
+        ElevadorDerecho = hardwareMap.get(DcMotor.class, "m1");
+        ElevadorIzquierdo = hardwareMap.get(DcMotor.class, "m2");
+        Gancho = hardwareMap.get(DcMotor.class, "m3");
+        BaseBrazo = hardwareMap.get(Servo.class, "s0");
+        garraDer = hardwareMap.get(Servo.class, "s1");
+        garraIzq = hardwareMap.get(Servo.class, "s2");
+        Avion = hardwareMap.get(Servo.class, "s3");
+        Cremallera = hardwareMap.get(Servo.class, "s4");
         imu = hardwareMap.get(IMU.class, "imu");
+    }
 
+    public void setDirections(){
+        FR.setDirection(DcMotorSimple.Direction.REVERSE);
+        BR.setDirection(DcMotorSimple.Direction.REVERSE);
+        ElevadorDerecho.setDirection(DcMotorSimple.Direction.REVERSE);
+        garraDer.setDirection(Servo.Direction.REVERSE);
     }
 
     public void autoSetup() {
@@ -62,6 +100,10 @@ public class Rhino {
         FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Barredora.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ElevadorDerecho.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ElevadorIzquierdo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Gancho.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
 
@@ -71,140 +113,40 @@ public class Rhino {
         FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Barredora.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        ElevadorDerecho.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        ElevadorIzquierdo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Gancho.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     }
 
-    public void drive(int distanciaCM, double power, double angulo) {
+    public void adelante(int distanciaCM, double power) {
+
+        FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         double diametroCM = 10;
-        int ticksPerRev = 570;
 
-        double conversion = (distanciaCM * ticksPerRev) / (Math.PI * diametroCM);
+        int ticksPerRev = 300;
 
-        int target = (int) conversion;
+        double conversion = (distanciaCM * ticksPerRev)/(Math.PI * diametroCM);
 
-        FR.setTargetPosition(target);
-        FL.setTargetPosition(target);
-        BR.setTargetPosition(target);
-        BL.setTargetPosition(target);
+        int target = (int)conversion;
 
-        while (FR.isBusy() && linearOpMode.opModeIsActive()) {
-
-            //talvez necesitamos esto...
-            //double error = angulo - currentAngle.getYaw(AngleUnit.DEGREES);
-            //double correccion = 1/Math.tan(currentAngle.getYaw(AngleUnit.DEGREES));
-            YawPitchRollAngles getAngle = imu.getRobotYawPitchRollAngles();
-            double currentAngle = getAngle.getYaw(AngleUnit.DEGREES);
-
-            if (currentAngle < angulo) {
-
-                double correccionR = 0.5;
-                FR.setPower(power * correccionR);
-                BR.setPower(power * correccionR);
-
-            } else {
-
-                double correccionR = 0;
-                FR.setPower(power * correccionR);
-                BR.setPower(power * correccionR);
-
-            }
-
-            if (currentAngle < angulo) {
-
-                double correccionL = 0.5;
-                FL.setPower(power * correccionL);
-                BL.setPower(power * correccionL);
-
-            } else {
-
-                double correccionL = 0;
-                FL.setPower(power * correccionL);
-                BL.setPower(power * correccionL);
-
-            }
-            /*
-            FR.setPower(power * correccionR);
-            FL.setPower(power * correccionL);
-            BR.setPower(power * correccionR);
-            BL.setPower(power * correccionL);
-            */
-
-            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        }
-
-        FR.setPower(0);
-        FL.setPower(0);
-        BR.setPower(0);
-        BL.setPower(0);
-
-    }
-
-    public void turn(int targetDegree, double power) {
-
+        FR.setTargetPosition(target * adelante);
+        FL.setTargetPosition(target * adelante);
+        BR.setTargetPosition(target * adelante);
+        BL.setTargetPosition(target * adelante);
+        
         FR.setPower(power);
         FL.setPower(power);
         BR.setPower(power);
         BL.setPower(power);
 
-        boolean turning = true;
+        while ( (target - 10) < FR.getCurrentPosition() || FR.getCurrentPosition() < (target + 10)) {
 
-        while (turning) {
-
-            YawPitchRollAngles currentAngle = imu.getRobotYawPitchRollAngles();
-
-            if (currentAngle.getYaw(AngleUnit.DEGREES) == targetDegree) {
-
-                turning = false;
-
-            }
-
-        }
-
-        FR.setPower(0);
-        FL.setPower(0);
-        BR.setPower(0);
-        BL.setPower(0);
-
-    }
-
-    public double getYaw() {
-
-        YawPitchRollAngles currentAngle = imu.getRobotYawPitchRollAngles();
-
-        double yaw = currentAngle.getYaw(AngleUnit.DEGREES);
-
-        return yaw;
-
-    }
-
-    public void secureDrive(int distanciaCM, double power) {
-
-        double diametroCM = 10;
-
-        int ticksPerRev = 570;
-
-        double conversion = (distanciaCM * ticksPerRev) / (Math.PI * diametroCM);
-
-        int target = (int) conversion;
-
-        FR.setTargetPosition(-target);
-        FL.setTargetPosition(target);
-        BR.setTargetPosition(-target);
-        BL.setTargetPosition(target);
-
-        FR.setPower(power);
-        FL.setPower(power);
-        BR.setPower(power);
-        BL.setPower(power);
-
-        while (FR.getCurrentPosition() != target && linearOpMode.opModeIsActive()) {
-
-            //talvez necesitamos esto...
             //YawPitchRollAngles currentAngle = imu.getRobotYawPitchRollAngles();
             //double error = angulo - currentAngle.getYaw(AngleUnit.DEGREES);
             //double correccion = 1/Math.tan(currentAngle.getYaw(AngleUnit.DEGREES));
@@ -223,4 +165,242 @@ public class Rhino {
 
     }
 
+    public void atras(int distanciaCM, double power) {
+
+        double diametroCM = 10;
+
+        int ticksPerRev = 570;
+
+        double conversion = (distanciaCM * ticksPerRev)/(Math.PI * diametroCM);
+
+        int target = (int)conversion;
+
+        FR.setTargetPosition(-target);
+        FL.setTargetPosition(target);
+        BR.setTargetPosition(-target);
+        BL.setTargetPosition(target);
+
+        while (FR.isBusy()) {
+
+            //YawPitchRollAngles currentAngle = imu.getRobotYawPitchRollAngles();
+            //double error = angulo - currentAngle.getYaw(AngleUnit.DEGREES);
+            //double correccion = 1/Math.tan(currentAngle.getYaw(AngleUnit.DEGREES));
+
+            FR.setPower(power);
+            FL.setPower(power);
+            BR.setPower(power);
+            BL.setPower(power);
+
+            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        }
+
+        FR.setPower(0);
+        FL.setPower(0);
+        BR.setPower(0);
+        BL.setPower(0);
+
+    }
+
+
+    public void izquierda(int distanciaCM, double power) {
+
+        double diametroCM = 10;
+
+        int ticksPerRev = 570;
+
+        double conversion = (distanciaCM * ticksPerRev)/(Math.PI * diametroCM);
+
+        int target = (int)conversion;
+
+        FR.setTargetPosition(target);
+        FL.setTargetPosition(target);
+        BR.setTargetPosition(-target);
+        BL.setTargetPosition(-target);
+
+        while (FR.isBusy()) {
+
+            //YawPitchRollAngles currentAngle = imu.getRobotYawPitchRollAngles();
+            //double error = angulo - currentAngle.getYaw(AngleUnit.DEGREES);
+            //double correccion = 1/Math.tan(currentAngle.getYaw(AngleUnit.DEGREES));
+
+            FR.setPower(power);
+            FL.setPower(power);
+            BR.setPower(power);
+            BL.setPower(power);
+
+            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        }
+
+        FR.setPower(0);
+        FL.setPower(0);
+        BR.setPower(0);
+        BL.setPower(0);
+
+    }
+
+    public void derecha(int distanciaCM, double power) {
+
+        double diametroCM = 10;
+
+        int ticksPerRev = 570;
+
+        double conversion = (distanciaCM * ticksPerRev)/(Math.PI * diametroCM);
+
+        int target = (int)conversion;
+
+        FR.setTargetPosition(-target);
+        FL.setTargetPosition(-target);
+        BR.setTargetPosition(target);
+        BL.setTargetPosition(target);
+
+        while (FR.isBusy()) {
+
+            //YawPitchRollAngles currentAngle = imu.getRobotYawPitchRollAngles();
+            //double error = angulo - currentAngle.getYaw(AngleUnit.DEGREES);
+            //double correccion = 1/Math.tan(currentAngle.getYaw(AngleUnit.DEGREES));
+
+            FR.setPower(power);
+            FL.setPower(power);
+            BR.setPower(power);
+            BL.setPower(power);
+
+            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        }
+
+        FR.setPower(0);
+        FL.setPower(0);
+        BR.setPower(0);
+        BL.setPower(0);
+
+    }
+
+    public void rightTurn(int distanciaCM, double power) {
+
+        double diametroCM = 10;
+
+        int ticksPerRev = 570;
+
+        double conversion = (distanciaCM * ticksPerRev)/(Math.PI * diametroCM);
+
+        int target = (int)conversion;
+
+        FR.setTargetPosition(-target);
+        FL.setTargetPosition(-target);
+        BR.setTargetPosition(-target);
+        BL.setTargetPosition(-target);
+
+        while (FR.isBusy()) {
+
+            //YawPitchRollAngles currentAngle = imu.getRobotYawPitchRollAngles();
+            //double error = angulo - currentAngle.getYaw(AngleUnit.DEGREES);
+            //double correccion = 1/Math.tan(currentAngle.getYaw(AngleUnit.DEGREES));
+
+            FR.setPower(power);
+            FL.setPower(power);
+            BR.setPower(power);
+            BL.setPower(power);
+
+            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        }
+
+        FR.setPower(0);
+        FL.setPower(0);
+        BR.setPower(0);
+        BL.setPower(0);
+
+    }
+
+    public void leftTurn(int distanciaCM, double power) {
+
+        double diametroCM = 10;
+
+        int ticksPerRev = 570;
+
+        double conversion = (distanciaCM * ticksPerRev)/(Math.PI * diametroCM);
+
+        int target = (int)conversion;
+
+        FR.setTargetPosition(target);
+        FL.setTargetPosition(target);
+        BR.setTargetPosition(target);
+        BL.setTargetPosition(target);
+
+        while (FR.isBusy()) {
+
+            //YawPitchRollAngles currentAngle = imu.getRobotYawPitchRollAngles();
+            //double error = angulo - currentAngle.getYaw(AngleUnit.DEGREES);
+            //double correccion = 1/Math.tan(currentAngle.getYaw(AngleUnit.DEGREES));
+
+            FR.setPower(power);
+            FL.setPower(power);
+            BR.setPower(power);
+            BL.setPower(power);
+
+            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        }
+
+        FR.setPower(0);
+        FL.setPower(0);
+        BR.setPower(0);
+        BL.setPower(0);
+
+    }
+
+    public void turn(int grado, double power){
+
+        // Define a margin of error for the target heading
+        double headingTolerance = 10; // You can adjust this value based on your robot's accuracy requirements
+
+        // Calculate the minimum and maximum acceptable heading
+        double minHeading = grado - headingTolerance;
+        double maxHeading = grado + headingTolerance;
+
+        // Keep turning until the robot reaches the target heading
+        while (true) {
+            YawPitchRollAngles getAngles = imu.getRobotYawPitchRollAngles();
+            double currentHeading = getAngles.getYaw(AngleUnit.DEGREES);
+
+            if (currentHeading >= minHeading && currentHeading <= maxHeading) {
+                // Robot is within the acceptable range of the target heading
+                FR.setPower(0);
+                FL.setPower(0);
+                BR.setPower(0);
+                BL.setPower(0); // Stop the motors or set power to zero
+                break; // Exit the loop
+            } else if (currentHeading < grado) {
+                // Turn right (clockwise) to reach the target heading
+                FR.setPower(power * adelante);
+                FL.setPower(power * atras);
+                BR.setPower(power * adelante);
+                BL.setPower(power * atras);
+            } else {
+                // Turn left (counter-clockwise) to reach the target heading
+                FR.setPower(power * atras);
+                FL.setPower(power * adelante);
+                BR.setPower(power * atras);
+                BL.setPower(power * adelante);
+            }
+        }
+    }
+    
 }
