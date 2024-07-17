@@ -1,3 +1,7 @@
+/*
+This code is the Constructor of special functions of the 2023 worlds
+*/
+
 package org.firstinspires.ftc.teamcode.FTC.autonomo.samples;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
